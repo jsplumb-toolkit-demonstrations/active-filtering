@@ -1,0 +1,7 @@
+{
+    "dependencies": {
+        "jsplumbtoolkit": "file:./jsplumbtoolkit.tgz",
+        "jsplumbtoolkit-demo-support": "file:./jsplumbtoolkit-demo-support.tgz",
+        "jsplumbtoolkit-syntax-highlighter": "file:./jsplumbtoolkit-syntax-highlighter.tgz"
+    }
+}
