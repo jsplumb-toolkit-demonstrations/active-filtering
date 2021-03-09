@@ -4,9 +4,9 @@
     var root = this;
     var jsPlumb = root.jsPlumb;
 
-    jsPlumbToolkit.ready(function () {
+    jsPlumbToolkitBrowserUI.ready(function () {
 
-        var toolkit = jsPlumbToolkit.newInstance({
+        var toolkit = jsPlumbToolkitBrowserUI.newInstance({
             beforeConnect:function(source, target) {
                 // ignore node->node connections; our UI is not configured to produce them. we could catch it and
                 // return false, though, which would ensure that nodes could not be connected programmatically.
@@ -18,12 +18,12 @@
                     }
 
                     // cannot connect to Ports on the same Node as the Edge source
-                    if (source.getNode() === target.getNode()) {
+                    if (source.getParent() === target.getParent()) {
                         return false;
                     }
 
-                    var sourceData = source.getNode().data,
-                        targetData = target.getNode().data;
+                    var sourceData = source.getParent().data,
+                        targetData = target.getParent().data;
 
                     // attempt to match animals
                     var sourceItem  = sourceData.items[source.id];
@@ -69,7 +69,7 @@
         var newNode = function() {
             var groupCount = Math.floor(Math.random() * 3) + 1,
                 data = {
-                    id:jsPlumbUtil.uuid(),
+                    id:jsPlumb.uuid(),
                     items:[]
                 };
 
@@ -98,9 +98,9 @@
             },
             edges: {
                 "default": {
-                    connector: [ "StateMachine", { curviness: 10 } ],
-                    endpoint: [ "Dot", { radius: 10 } ],
-                    anchor: [ "Continuous", { faces:["left", "right"]} ]
+                    connector: { type:"StateMachine", options:{ curviness: 10 } },
+                    endpoint: { type:"Dot", options:{ radius: 10 } },
+                    anchor: { type:"Continuous", options:{ faces:["left", "right"]} }
                 }
             }
         };
@@ -112,21 +112,27 @@
             layout: {
                 type: "Spring"
             },
-            miniview: {
-                container:miniviewElement
-            },
+            plugins:[
+                {
+                    type:"miniview",
+                    options:{
+                        container:miniviewElement
+                    }
+                },
+                "activeFiltering",
+                "lasso"
+            ],
             lassoFilter: ".controls, .controls *, .miniview, .miniview *",
             events: {
                 canvasClick: function (e) {
                     toolkit.clearSelection();
                 },
                 modeChanged: function (mode) {
-                    jsPlumb.removeClass(jsPlumb.getSelector("[mode]"), "selected-mode");
-                    jsPlumb.addClass(jsPlumb.getSelector("[mode='" + mode + "']"), "selected-mode");
+                    renderer.jsplumb.removeClass(document.querySelector(".selected-mode"), "selected-mode");
+                    renderer.jsplumb.addClass(document.querySelector("[mode='" + mode + "']"), "selected-mode");
                 }
             },
-            consumeRightClick:false,
-            activeFiltering:true
+            consumeRightClick:false
         });
 
         //
@@ -134,7 +140,7 @@
         // remove buttons. This callback finds the related Node and
         // then tells the toolkit to delete it.
         //
-        jsPlumb.on(canvasElement, "tap", ".delete *", function (e) {
+        renderer.on(canvasElement, "tap", ".delete *", function (e) {
             var info = toolkit.getObjectInfo(this);
             var selection = toolkit.selectDescendants(info.obj, true);
             toolkit.remove(selection);
@@ -145,7 +151,7 @@
         // add buttons. This callback adds an edge from the given node
         // to a newly created node, and then the layout is refreshed.
         //
-        jsPlumb.on(canvasElement, "tap", ".add *", function (e) {
+        renderer.on(canvasElement, "tap", ".add *", function (e) {
             // this helper method can retrieve the associated
             // toolkit information from any DOM element.
             var info = toolkit.getObjectInfo(this);
@@ -158,12 +164,12 @@
         });
 
         // pan mode/select mode
-        jsPlumb.on(mainElement, "tap", "[mode]", function () {
+        renderer.on(mainElement, "tap", "[mode]", function () {
             renderer.setMode(this.getAttribute("mode"));
         });
 
         // on home button tap, zoom content to fit.
-        jsPlumb.on(mainElement, "tap", "[reset]", function () {
+        renderer.on(mainElement, "tap", "[reset]", function () {
             toolkit.clearSelection();
             renderer.zoomToFit();
         });
@@ -179,31 +185,12 @@
             }, 1950);
         }
 
-        jsPlumb.on(mainElement, "tap", "[add]", function() {
+        renderer.on(mainElement, "tap", "[add]", function() {
             var node = newNode();
             renderer.zoomToFit();
             flash(renderer.getRenderedElement(node));
         });
 
-        var _syntaxHighlight = function (json) {
-            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            return "<pre>" + json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-                var cls = 'number';
-                if (/^"/.test(match)) {
-                    if (/:$/.test(match)) {
-                        cls = 'key';
-                    } else {
-                        cls = 'string';
-                    }
-                } else if (/true|false/.test(match)) {
-                    cls = 'boolean';
-                } else if (/null/.test(match)) {
-                    cls = 'null';
-                }
-                return '<span class="' + cls + '">' + match + '</span>';
-            }) + "</pre>";
-        };
-
-        new jsPlumbSyntaxHighlighter(toolkit, ".jtk-demo-dataset");
+        jsPlumbToolkitSyntaxHighlighter.newInstance(toolkit, ".jtk-demo-dataset", 2);
     });
 })();
