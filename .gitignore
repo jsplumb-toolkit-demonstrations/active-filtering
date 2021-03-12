@@ -2,4 +2,6 @@
 *.tgz
 node_modules
 .npmrc
+_build
+package-lock.json
 

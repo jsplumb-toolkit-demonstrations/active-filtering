@@ -105,8 +105,7 @@
             }
         };
 
-        var renderer = toolkit.render({
-            container: canvasElement,
+        var renderer = toolkit.render(canvasElement, {
             zoomToFit: true,
             view: view,
             layout: {
