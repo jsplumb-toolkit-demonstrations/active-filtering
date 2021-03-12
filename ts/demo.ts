@@ -1,7 +1,18 @@
-import {ready, newInstance, SurfaceViewOptions } from "@jsplumbtoolkit/browser-ui"
-import {isPort, uuid, Vertex} from "@jsplumbtoolkit/core"
+import {
+    ready,
+    newInstance,
+    SurfaceViewOptions,
+    MiniviewPlugin,
+    ActiveFilteringPlugin,
+    LassoPlugin
+} from "@jsplumbtoolkit/browser-ui"
+import {isPort, uuid, Vertex, EVENT_CLICK, SpringLayout, StateMachineConnector, DotEndpoint, ContinuousAnchor, cls} from "@jsplumbtoolkit/core"
 import {randomNode} from "@jsplumb/toolkit-demo-support"
 import { newInstance as newSyntaxHighlighter } from "@jsplumb/json-syntax-highlighter"
+
+const CLASS_SELECTED_MODE = "selected-mode"
+const SELECTOR_SELECTED_MODE = cls(CLASS_SELECTED_MODE)
+const CLASS_HIGHLIGHT = "hl"
 
 ready(() =>{
 
@@ -97,9 +108,9 @@ ready(() =>{
         },
         edges: {
             "default": {
-                connector: { type:"StateMachine", options:{ curviness: 10 } },
-                endpoint: { type:"Dot", options:{ radius: 10 } },
-                anchor: { type:"Continuous", options:{ faces:["left", "right"]} }
+                connector: { type:StateMachineConnector.type, options:{ curviness: 10 } },
+                endpoint: { type:DotEndpoint.type, options:{ radius: 10 } },
+                anchor: { type:ContinuousAnchor.type, options:{ faces:["left", "right"]} }
             }
         }
     };
@@ -112,22 +123,22 @@ ready(() =>{
         },
         plugins:[
             {
-                type:"miniview",
+                type:MiniviewPlugin.type,
                 options:{
                     container:miniviewElement
                 }
             },
-            "activeFiltering",
-            "lasso"
+            ActiveFilteringPlugin.type,
+            LassoPlugin.type
         ],
         lassoFilter: ".controls, .controls *, .miniview, .miniview *",
         events: {
-            canvasClick: function (e) {
+            canvasClick: (eEvent) => {
                 toolkit.clearSelection();
             },
-            modeChanged: function (mode) {
-                renderer.jsplumb.removeClass(document.querySelector(".selected-mode"), "selected-mode");
-                renderer.jsplumb.addClass(document.querySelector("[mode='" + mode + "']"), "selected-mode");
+            modeChanged: (mode:string) => {
+                renderer.jsplumb.removeClass(document.querySelector(SELECTOR_SELECTED_MODE), CLASS_SELECTED_MODE);
+                renderer.jsplumb.addClass(document.querySelector("[mode='" + mode + "']"), CLASS_SELECTED_MODE);
             }
         },
         consumeRightClick:false
@@ -138,7 +149,7 @@ ready(() =>{
     // remove buttons. This callback finds the related Node and
     // then tells the toolkit to delete it.
     //
-    renderer.on(canvasElement, "click", ".delete *", (e:Event) => {
+    renderer.on(canvasElement, EVENT_CLICK, ".delete *", (e:Event) => {
         const info = toolkit.getObjectInfo<Vertex>(e.target || e.srcElement)
         const selection = toolkit.selectDescendants(info.obj, true)
         toolkit.remove(selection)
@@ -149,7 +160,7 @@ ready(() =>{
     // add buttons. This callback adds an edge from the given node
     // to a newly created node, and then the layout is refreshed.
     //
-    renderer.on(canvasElement, "click", ".add *", (e:Event) => {
+    renderer.on(canvasElement, EVENT_CLICK, ".add *", (e:Event) => {
         // this helper method can retrieve the associated
         // toolkit information from any DOM element.
         const info = toolkit.getObjectInfo<Vertex>(e.target || e.srcElement);
@@ -162,13 +173,13 @@ ready(() =>{
     })
 
     // pan mode/select mode
-    renderer.on(mainElement, "click", "[mode]",  (e:Event) => {
+    renderer.on(mainElement, EVENT_CLICK, "[mode]",  (e:Event) => {
         const el = (e.target || e.srcElement) as HTMLElement
         renderer.setMode(el.getAttribute("mode"))
     })
 
     // on home button tap, zoom content to fit.
-    renderer.on(mainElement, "tap", "[reset]",  () => {
+    renderer.on(mainElement, EVENT_CLICK, "[reset]",  () => {
         toolkit.clearSelection()
         renderer.zoomToFit()
     })
@@ -178,13 +189,13 @@ ready(() =>{
     // take it off.
     //
     function flash(el:Element) {
-        renderer.addClass(el, "hl")
+        renderer.addClass(el, CLASS_HIGHLIGHT)
         setTimeout(function() {
-            renderer.removeClass(el, "hl")
+            renderer.removeClass(el, CLASS_HIGHLIGHT)
         }, 1950)
     }
 
-    renderer.on(mainElement, "tap", "[add]", () => {
+    renderer.on(mainElement, EVENT_CLICK, "[add]", () => {
         const node = newNode()
         renderer.zoomToFit()
         flash(renderer.getRenderedElement(node))
