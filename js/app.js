@@ -134,34 +134,6 @@
             consumeRightClick:false
         });
 
-        //
-        // use event delegation to attach event handlers to
-        // remove buttons. This callback finds the related Node and
-        // then tells the toolkit to delete it.
-        //
-        renderer.on(canvasElement, "tap", ".delete *", function (e) {
-            var info = toolkit.getObjectInfo(this);
-            var selection = toolkit.selectDescendants(info.obj, true);
-            toolkit.remove(selection);
-        });
-
-        //
-        // use event delegation to attach event handlers to
-        // add buttons. This callback adds an edge from the given node
-        // to a newly created node, and then the layout is refreshed.
-        //
-        renderer.on(canvasElement, "tap", ".add *", function (e) {
-            // this helper method can retrieve the associated
-            // toolkit information from any DOM element.
-            var info = toolkit.getObjectInfo(this);
-            // get a random node.
-            var n = jsPlumbToolkitDemoSupport.randomNode();
-            // add the node to the toolkit
-            var newNode = toolkit.addNode(n);
-            // and add an edge for it from the current node.
-            toolkit.addEdge({source: info.obj, target: newNode});
-        });
-
         // pan mode/select mode
         renderer.on(mainElement, "tap", "[mode]", function () {
             renderer.setMode(this.getAttribute("mode"));
