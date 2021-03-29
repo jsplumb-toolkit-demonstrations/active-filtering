@@ -6,8 +6,7 @@ import {
     ActiveFilteringPlugin,
     LassoPlugin
 } from "@jsplumbtoolkit/browser-ui"
-import {isPort, uuid, Vertex, EVENT_CLICK, SpringLayout, StateMachineConnector, DotEndpoint, ContinuousAnchor, cls} from "@jsplumbtoolkit/core"
-import {randomNode} from "@jsplumb/toolkit-demo-support"
+import {isPort, uuid, EVENT_CLICK, SpringLayout, StateMachineConnector, DotEndpoint, ContinuousAnchor, cls} from "@jsplumbtoolkit/core"
 import { newInstance as newSyntaxHighlighter } from "@jsplumb/json-syntax-highlighter"
 
 const CLASS_SELECTED_MODE = "selected-mode"
@@ -24,56 +23,54 @@ ready(() =>{
 
                 // cannot create loopback connections
                 if (source === target) {
-                    return false;
+                    return false
                 }
 
                 // cannot connect to Ports on the same Node as the Edge source
                 if (source.getParent() === target.getParent()) {
-                    return false;
+                    return false
                 }
 
-                var sourceData = source.getParent().data,
+                const sourceData = source.getParent().data,
                     targetData = target.getParent().data;
 
                 // attempt to match animals
-                var sourceItem  = sourceData.items[source.id];
-                var targetItem  = targetData.items[target.id];
+                const sourceItem  = sourceData.items[source.id];
+                const targetItem  = targetData.items[target.id];
                 if (sourceItem.entries && targetItem.entries) {
-                    for (var i = 0; i < sourceItem.entries.length; i++) {
+                    for (let i = 0; i < sourceItem.entries.length; i++) {
                         if (targetItem.entries.indexOf(sourceItem.entries[i]) !== -1) {
-                            return true;
+                            return true
                         }
                     }
                 }
-                return false;
+                return false
             }
         }
     });
 
     const mainElement = document.querySelector("#jtk-demo-connectivity"),
         canvasElement = mainElement.querySelector(".jtk-demo-canvas"),
-        miniviewElement = mainElement.querySelector(".miniview");
+        miniviewElement = mainElement.querySelector(".miniview")
 
 // ----------------------- this code is the random node generator. it's just for this demo --------------------------------------
 
-    const words = [
-        "CAT", "DOG", "COW", "HORSE", "DUCK", "HEN"
-    ];
+    const words = [ "CAT", "DOG", "COW", "HORSE", "DUCK", "HEN" ]
 
     const randomPort = (index:number) => {
-        const out = [], map = {};
+        const out = [], map = {}
         function _one() {
-            let a, done = false;
+            let a, done = false
             while (!done) {
-                a = words[Math.floor(Math.random() * words.length)];
-                done = map[a] !== true;
-                map[a] = true;
+                a = words[Math.floor(Math.random() * words.length)]
+                done = map[a] !== true
+                map[a] = true
             }
-            return a;
+            return a
         }
-        out.push(_one());
-        out.push(_one());
-        return { entries:out, index:index };
+        out.push(_one())
+        out.push(_one())
+        return { entries:out, index:index }
     };
 
     const newNode = () => {
@@ -81,15 +78,14 @@ ready(() =>{
             data:any = {
                 id:uuid(),
                 items:[]
-            };
+            }
 
         for (let i = 0; i < groupCount; i++) {
-            data.items.push(randomPort(i));
+            data.items.push(randomPort(i))
         }
 
-        return toolkit.addNode(data);
-    };
-
+        return toolkit.addNode(data)
+    }
 
 // ---------------------------- / end random node generator ---------------------------------------------
 
@@ -98,7 +94,6 @@ ready(() =>{
     for (let i = 0; i < nodeCount;i++) {
         newNode()
     }
-
 
     const view:SurfaceViewOptions = {
         nodes: {
@@ -119,7 +114,7 @@ ready(() =>{
         zoomToFit: true,
         view: view,
         layout: {
-            type: "Spring"
+            type: SpringLayout.type
         },
         plugins:[
             {
@@ -133,7 +128,7 @@ ready(() =>{
         ],
         lassoFilter: ".controls, .controls *, .miniview, .miniview *",
         events: {
-            canvasClick: (eEvent) => {
+            canvasClick: (e:Event) => {
                 toolkit.clearSelection();
             },
             modeChanged: (mode:string) => {
@@ -142,39 +137,10 @@ ready(() =>{
             }
         },
         consumeRightClick:false
-    });
-
-    //
-    // use event delegation to attach event handlers to
-    // remove buttons. This callback finds the related Node and
-    // then tells the toolkit to delete it.
-    //
-    renderer.on(canvasElement, EVENT_CLICK, ".delete *", (e:Event) => {
-        const info = toolkit.getObjectInfo<Vertex>(e.target || e.srcElement)
-        const selection = toolkit.selectDescendants(info.obj, true)
-        toolkit.remove(selection)
-    })
-
-    //
-    // use event delegation to attach event handlers to
-    // add buttons. This callback adds an edge from the given node
-    // to a newly created node, and then the layout is refreshed.
-    //
-    renderer.on(canvasElement, EVENT_CLICK, ".add *", (e:Event) => {
-        // this helper method can retrieve the associated
-        // toolkit information from any DOM element.
-        const info = toolkit.getObjectInfo<Vertex>(e.target || e.srcElement);
-        // get a random node.
-        const n = randomNode(uuid())
-        // add the node to the toolkit
-        const newNode = toolkit.addNode(n)
-        // and add an edge for it from the current node.
-        toolkit.addEdge({source: info.obj, target: newNode})
     })
 
     // pan mode/select mode
-    renderer.on(mainElement, EVENT_CLICK, "[mode]",  (e:Event) => {
-        const el = (e.target || e.srcElement) as HTMLElement
+    renderer.on(mainElement, EVENT_CLICK, "[mode]",  (e:Event, el:HTMLElement) => {
         renderer.setMode(el.getAttribute("mode"))
     })
 
