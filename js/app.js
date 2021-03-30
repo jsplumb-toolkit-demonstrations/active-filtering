@@ -127,8 +127,8 @@
                     toolkit.clearSelection();
                 },
                 modeChanged: function (mode) {
-                    renderer.jsplumb.removeClass(document.querySelector(".selected-mode"), "selected-mode");
-                    renderer.jsplumb.addClass(document.querySelector("[mode='" + mode + "']"), "selected-mode");
+                    renderer.removeClass(document.querySelector(".selected-mode"), "selected-mode");
+                    renderer.addClass(document.querySelector("[mode='" + mode + "']"), "selected-mode");
                 }
             },
             consumeRightClick:false
