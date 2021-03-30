@@ -6,7 +6,17 @@ import {
     ActiveFilteringPlugin,
     LassoPlugin
 } from "@jsplumbtoolkit/browser-ui"
-import {isPort, uuid, EVENT_CLICK, SpringLayout, StateMachineConnector, DotEndpoint, ContinuousAnchor, cls} from "@jsplumbtoolkit/core"
+import {
+    isPort,
+    uuid,
+    EVENT_CLICK,
+    SpringLayout,
+    StateMachineConnector,
+    DotEndpoint,
+    ContinuousAnchor,
+    cls,
+    Vertex
+} from "@jsplumbtoolkit/core"
 import { newInstance as newSyntaxHighlighter } from "@jsplumb/json-syntax-highlighter"
 
 const CLASS_SELECTED_MODE = "selected-mode"
@@ -16,7 +26,7 @@ const CLASS_HIGHLIGHT = "hl"
 ready(() =>{
 
     const toolkit = newInstance({
-        beforeConnect:function(source, target) {
+        beforeConnect:(source:Vertex, target:Vertex) => {
             // ignore node->node connections; our UI is not configured to produce them. we could catch it and
             // return false, though, which would ensure that nodes could not be connected programmatically.
             if (isPort(source) && isPort(target)) {
@@ -132,8 +142,8 @@ ready(() =>{
                 toolkit.clearSelection();
             },
             modeChanged: (mode:string) => {
-                renderer.jsplumb.removeClass(document.querySelector(SELECTOR_SELECTED_MODE), CLASS_SELECTED_MODE);
-                renderer.jsplumb.addClass(document.querySelector("[mode='" + mode + "']"), CLASS_SELECTED_MODE);
+                renderer.removeClass(document.querySelector(SELECTOR_SELECTED_MODE), CLASS_SELECTED_MODE);
+                renderer.addClass(document.querySelector("[mode='" + mode + "']"), CLASS_SELECTED_MODE);
             }
         },
         consumeRightClick:false
