@@ -1,31 +1,35 @@
 import {
     ready,
     newInstance,
-    SurfaceViewOptions,
-    MiniviewPlugin,
-    ActiveFilteringPlugin,
-    LassoPlugin
+    SurfaceViewOptions
 } from "@jsplumbtoolkit/browser-ui"
+
 import {
     isPort,
-    uuid,
-    EVENT_CLICK,
-    SpringLayout,
-    StateMachineConnector,
-    DotEndpoint,
-    ContinuousAnchor,
-    cls,
     Vertex
 } from "@jsplumbtoolkit/core"
+
+import { AnchorLocations } from "@jsplumb/common"
+
+import { EVENT_CLICK } from "@jsplumbtoolkit/browser-ui"
+import { DotEndpoint } from "@jsplumb/core"
+import { uuid } from "@jsplumb/util"
+
 import { newInstance as newSyntaxHighlighter } from "@jsplumb/json-syntax-highlighter"
+import {StateMachineConnector} from "@jsplumb/connector-bezier"
+import {SpringLayout} from "@jsplumbtoolkit/layout-spring"
+import {MiniviewPlugin} from "@jsplumbtoolkit/plugin-miniview"
+import {ActiveFilteringPlugin} from "@jsplumbtoolkit/plugin-active-filtering"
+import {LassoPlugin} from "@jsplumbtoolkit/plugin-lasso"
 
 const CLASS_SELECTED_MODE = "selected-mode"
-const SELECTOR_SELECTED_MODE = cls(CLASS_SELECTED_MODE)
+const SELECTOR_SELECTED_MODE = "." + CLASS_SELECTED_MODE
 const CLASS_HIGHLIGHT = "hl"
 
 ready(() =>{
 
     const toolkit = newInstance({
+        portDataProperty:"items",
         beforeConnect:(source:Vertex, target:Vertex) => {
             // ignore node->node connections; our UI is not configured to produce them. we could catch it and
             // return false, though, which would ensure that nodes could not be connected programmatically.
@@ -41,17 +45,13 @@ ready(() =>{
                     return false
                 }
 
-                const sourceData = source.getParent().data,
-                    targetData = target.getParent().data;
+                const sourceData = source.data.entries,
+                    targetData = target.data.entries
 
                 // attempt to match animals
-                const sourceItem  = sourceData.items[source.id];
-                const targetItem  = targetData.items[target.id];
-                if (sourceItem.entries && targetItem.entries) {
-                    for (let i = 0; i < sourceItem.entries.length; i++) {
-                        if (targetItem.entries.indexOf(sourceItem.entries[i]) !== -1) {
-                            return true
-                        }
+                for (let i = 0; i < sourceData.length; i++) {
+                    if (targetData.indexOf(sourceData[i]) !== -1) {
+                        return true
                     }
                 }
                 return false
@@ -80,7 +80,7 @@ ready(() =>{
         }
         out.push(_one())
         out.push(_one())
-        return { entries:out, index:index }
+        return { entries:out, index:index, id:uuid() }
     };
 
     const newNode = () => {
@@ -108,14 +108,14 @@ ready(() =>{
     const view:SurfaceViewOptions = {
         nodes: {
             "default": {
-                template: "tmplNode"
+                templateId: "tmplNode"
             }
         },
         edges: {
             "default": {
                 connector: { type:StateMachineConnector.type, options:{ curviness: 10 } },
                 endpoint: { type:DotEndpoint.type, options:{ radius: 10 } },
-                anchor: { type:ContinuousAnchor.type, options:{ faces:["left", "right"]} }
+                anchor: { type:AnchorLocations.Continuous, options:{ faces:["left", "right"]} }
             }
         }
     };

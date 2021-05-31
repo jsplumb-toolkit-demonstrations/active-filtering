@@ -34,7 +34,7 @@
     outline:3px solid #2ba5f7;
 }
 
-.jtk-target-disabled {
+[data-jtk-enabled='false'] {
     color:#999;
     opacity:0.3;
     outline:none;

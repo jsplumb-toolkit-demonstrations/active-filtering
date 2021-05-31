@@ -19,10 +19,8 @@
                 <h3>${id.substring(0, 5)}</h3>
                 <div style="display:flex;flex-direction:column">
                     <r-each in="items">
-                        <div>
+                        <div data-jtk-port="${id}" data-jtk-source="true" data-jtk-target="true">
                             <span>${entries.join(' ')}</span>
-                            <jtk-source port-id="${index}"/>
-                            <jtk-target port-id="${index}"/>
                         </div>
                     </r-each>
                 </div>
@@ -68,10 +66,19 @@
         <!-- /content -->
 
         <!-- imports -->
+        <script src='node_modules/@jsplumb/util/js/jsplumb.util.umd.js'></script>
+        <script src='node_modules/@jsplumb/common/js/jsplumb.common.umd.js'></script>
+        <script src='node_modules/@jsplumb/geom/js/jsplumb.geom.umd.js'></script>
         <script src='node_modules/@jsplumb/core/js/jsplumb.core.umd.js'></script>
         <script src='node_modules/@jsplumb/browser-ui/js/jsplumb.browser-ui.umd.js'></script>
+        <script src='node_modules/@jsplumb/bezier/js/jsplumb.bezier.umd.js'></script>
+        <script src='node_modules/@jsplumb/connector-bezier/js/jsplumb.connector-bezier.umd.js'></script>
         <script src='node_modules/@jsplumbtoolkit/core/js/jsplumbtoolkit.core.umd.js'></script>
         <script src='node_modules/@jsplumbtoolkit/browser-ui/js/jsplumbtoolkit.browser-ui.umd.js'></script>
+        <script src="node_modules/@jsplumbtoolkit/layout-spring/js/jsplumbtoolkit.layout-spring.umd.js"></script>
+        <script src="node_modules/@jsplumbtoolkit/plugin-miniview/js/jsplumbtoolkit.plugin-miniview.umd.js"></script>
+        <script src="node_modules/@jsplumbtoolkit/plugin-lasso/js/jsplumbtoolkit.plugin-lasso.umd.js"></script>
+        <script src="node_modules/@jsplumbtoolkit/plugin-active-filtering/js/jsplumbtoolkit.plugin-active-filtering.umd.js"></script>
         <script src="node_modules/@jsplumb/json-syntax-highlighter/jsplumbtoolkit-syntax-highlighter.umd.js"></script>
         <!-- /imports -->
 

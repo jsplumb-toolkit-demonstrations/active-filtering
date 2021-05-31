@@ -7,35 +7,30 @@
     jsPlumbToolkitBrowserUI.ready(function () {
 
         var toolkit = jsPlumbToolkitBrowserUI.newInstance({
+            portDataProperty:"items",
             beforeConnect:function(source, target) {
-                // ignore node->node connections; our UI is not configured to produce them. we could catch it and
-                // return false, though, which would ensure that nodes could not be connected programmatically.
-                if (source.objectType !== "Node" && target.objectType !== "Node") {
+                if (jsPlumbToolkit.isPort(source) && jsPlumbToolkit.isPort(target)) {
 
                     // cannot create loopback connections
                     if (source === target) {
-                        return false;
+                        return false
                     }
 
                     // cannot connect to Ports on the same Node as the Edge source
                     if (source.getParent() === target.getParent()) {
-                        return false;
+                        return false
                     }
 
-                    var sourceData = source.getParent().data,
-                        targetData = target.getParent().data;
+                    var sourceData = source.data.entries,
+                        targetData = target.data.entries;
 
                     // attempt to match animals
-                    var sourceItem  = sourceData.items[source.id];
-                    var targetItem  = targetData.items[target.id];
-                    if (sourceItem.entries && targetItem.entries) {
-                        for (var i = 0; i < sourceItem.entries.length; i++) {
-                            if (targetItem.entries.indexOf(sourceItem.entries[i]) !== -1) {
-                                return true;
-                            }
+                    for (var i = 0; i < sourceData.length; i++) {
+                        if (targetData.indexOf(sourceData[i]) !== -1) {
+                            return true
                         }
                     }
-                    return false;
+                    return false
                 }
             }
         });
@@ -63,13 +58,13 @@
             }
             out.push(_one());
             out.push(_one());
-            return { entries:out, index:index };
+            return { entries:out, index:index, id:jsPlumbUtil.uuid() };
         };
 
         var newNode = function() {
             var groupCount = Math.floor(Math.random() * 3) + 1,
                 data = {
-                    id:jsPlumb.uuid(),
+                    id:jsPlumbUtil.uuid(),
                     items:[]
                 };
 
@@ -93,7 +88,7 @@
         var view = {
             nodes: {
                 "default": {
-                    template: "tmplNode"
+                    templateId: "tmplNode"
                 }
             },
             edges: {
@@ -150,9 +145,9 @@
         // take it off.
         //
         function flash(el) {
-            jsPlumb.addClass(el, "hl");
+            renderer.addClass(el, "hl");
             setTimeout(function() {
-                jsPlumb.removeClass(el, "hl");
+                renderer.removeClass(el, "hl");
             }, 1950);
         }
 
