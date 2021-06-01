@@ -9,10 +9,8 @@ import {
     Vertex
 } from "@jsplumbtoolkit/core"
 
-import { AnchorLocations } from "@jsplumb/common"
-
 import { EVENT_CLICK } from "@jsplumbtoolkit/browser-ui"
-import { DotEndpoint } from "@jsplumb/core"
+import { DotEndpoint, AnchorLocations } from "@jsplumb/core"
 import { uuid } from "@jsplumb/util"
 
 import { newInstance as newSyntaxHighlighter } from "@jsplumb/json-syntax-highlighter"
@@ -134,9 +132,11 @@ ready(() =>{
                 }
             },
             ActiveFilteringPlugin.type,
-            LassoPlugin.type
+            {
+                type:LassoPlugin.type,
+                options:{lassoFilter: ".controls, .controls *, .miniview, .miniview *"}
+            }
         ],
-        lassoFilter: ".controls, .controls *, .miniview, .miniview *",
         events: {
             canvasClick: (e:Event) => {
                 toolkit.clearSelection();
