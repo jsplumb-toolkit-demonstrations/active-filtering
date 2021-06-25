@@ -4,8 +4,7 @@
   "description": "",
   "main": "demo.js",
   "scripts": {
-    "rollup": "set -e;tsc;rollup -c rollup.config.js",
-    "tsc": "tsc"
+    "build": "set -e;npx tsc;npx rollup -c rollup.config.js"
   },
   "repository": {
     "type": "git",
