@@ -126,6 +126,9 @@
                     renderer.addClass(document.querySelector("[mode='" + mode + "']"), "selected-mode");
                 }
             },
+            dragOptions:{
+                filter:"[data-jtk-port], [data-jtk-port] *"
+            },
             consumeRightClick:false
         });
 
