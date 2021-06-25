@@ -1,24 +1,21 @@
 import {
     ready,
     newInstance,
-    SurfaceViewOptions
+    SurfaceViewOptions,
+    EVENT_CLICK,
+    SurfaceMode,
+    EVENT_CANVAS_CLICK,
+    EVENT_SURFACE_MODE_CHANGED
 } from "@jsplumbtoolkit/browser-ui"
 
-import {
-    isPort,
-    Vertex
-} from "@jsplumbtoolkit/core"
-
-import { EVENT_CLICK } from "@jsplumbtoolkit/browser-ui"
-import { DotEndpoint, AnchorLocations } from "@jsplumb/core"
-import { uuid } from "@jsplumb/util"
-
+import { isPort, Vertex, uuid } from "@jsplumbtoolkit/core"
 import { newInstance as newSyntaxHighlighter } from "@jsplumb/json-syntax-highlighter"
 import {StateMachineConnector} from "@jsplumb/connector-bezier"
 import {SpringLayout} from "@jsplumbtoolkit/layout-spring"
 import {MiniviewPlugin} from "@jsplumbtoolkit/plugin-miniview"
 import {ActiveFilteringPlugin} from "@jsplumbtoolkit/plugin-active-filtering"
 import {LassoPlugin} from "@jsplumbtoolkit/plugin-lasso"
+import {DEFAULT, DotEndpoint, AnchorLocations} from "@jsplumb/core"
 
 const CLASS_SELECTED_MODE = "selected-mode"
 const SELECTOR_SELECTED_MODE = "." + CLASS_SELECTED_MODE
@@ -105,12 +102,12 @@ ready(() =>{
 
     const view:SurfaceViewOptions = {
         nodes: {
-            "default": {
+            [DEFAULT]: {
                 templateId: "tmplNode"
             }
         },
         edges: {
-            "default": {
+            [DEFAULT]: {
                 connector: { type:StateMachineConnector.type, options:{ curviness: 10 } },
                 endpoint: { type:DotEndpoint.type, options:{ radius: 10 } },
                 anchor: { type:AnchorLocations.Continuous, options:{ faces:["left", "right"]} }
@@ -138,20 +135,24 @@ ready(() =>{
             }
         ],
         events: {
-            canvasClick: (e:Event) => {
-                toolkit.clearSelection();
+            [EVENT_CANVAS_CLICK]: (e:Event) => {
+                toolkit.clearSelection()
             },
-            modeChanged: (mode:string) => {
-                renderer.removeClass(document.querySelector(SELECTOR_SELECTED_MODE), CLASS_SELECTED_MODE);
-                renderer.addClass(document.querySelector("[mode='" + mode + "']"), CLASS_SELECTED_MODE);
+            [EVENT_SURFACE_MODE_CHANGED]: (mode:string) => {
+                renderer.removeClass(document.querySelector(SELECTOR_SELECTED_MODE), CLASS_SELECTED_MODE)
+                renderer.addClass(document.querySelector("[mode='" + mode + "']"), CLASS_SELECTED_MODE)
             }
         },
-        consumeRightClick:false
+        consumeRightClick:false,
+        // disable dragging from anywhere in the individual animal elements (drag can only be done via the header)
+        dragOptions:{
+            filter:"[data-jtk-port], [data-jtk-port] *"
+        }
     })
 
     // pan mode/select mode
     renderer.on(mainElement, EVENT_CLICK, "[mode]",  (e:Event, el:HTMLElement) => {
-        renderer.setMode(el.getAttribute("mode"))
+        renderer.setMode(el.getAttribute("mode") as SurfaceMode)
     })
 
     // on home button tap, zoom content to fit.
@@ -171,11 +172,12 @@ ready(() =>{
         }, 1950)
     }
 
+    // on add node button, add a new node, zoom the display, flash the new element.
     renderer.on(mainElement, EVENT_CLICK, "[add]", () => {
         const node = newNode()
         renderer.zoomToFit()
         flash(renderer.getRenderedElement(node))
     });
 
-    newSyntaxHighlighter(toolkit, ".jtk-demo-dataset", 2);
-});
+    newSyntaxHighlighter(toolkit, ".jtk-demo-dataset", 2)
+})
