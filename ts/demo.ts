@@ -1,6 +1,4 @@
 import {
-    ready,
-    newInstance,
     SurfaceViewOptions,
     EVENT_CLICK,
     SurfaceMode,
@@ -8,13 +6,18 @@ import {
     EVENT_SURFACE_MODE_CHANGED
 } from "@jsplumbtoolkit/browser-ui"
 
+import {
+    ready,
+    newInstance
+} from "@jsplumbtoolkit/browser-ui-vanilla"
+
 import { isPort, Vertex, uuid } from "@jsplumbtoolkit/core"
 import { newInstance as newSyntaxHighlighter } from "@jsplumb/json-syntax-highlighter"
 import {StateMachineConnector} from "@jsplumb/connector-bezier"
 import {SpringLayout} from "@jsplumbtoolkit/layout-spring"
-import {MiniviewPlugin} from "@jsplumbtoolkit/plugin-miniview"
-import {ActiveFilteringPlugin} from "@jsplumbtoolkit/plugin-active-filtering"
-import {LassoPlugin} from "@jsplumbtoolkit/plugin-lasso"
+import {MiniviewPlugin} from "@jsplumbtoolkit/browser-ui-plugin-miniview"
+import {ActiveFilteringPlugin} from "@jsplumbtoolkit/browser-ui-plugin-active-filtering"
+import {LassoPlugin} from "@jsplumbtoolkit/browser-ui-plugin-lasso"
 import {DEFAULT, DotEndpoint, AnchorLocations} from "@jsplumb/core"
 
 const CLASS_SELECTED_MODE = "selected-mode"
