@@ -13,12 +13,17 @@ import {
 
 import { isPort, Vertex, uuid } from "@jsplumbtoolkit/core"
 import { newInstance as newSyntaxHighlighter } from "@jsplumb/json-syntax-highlighter"
+
 import {StateMachineConnector} from "@jsplumb/connector-bezier"
+
 import {SpringLayout} from "@jsplumbtoolkit/layout-spring"
+
 import {MiniviewPlugin} from "@jsplumbtoolkit/browser-ui-plugin-miniview"
 import {ActiveFilteringPlugin} from "@jsplumbtoolkit/browser-ui-plugin-active-filtering"
 import {LassoPlugin} from "@jsplumbtoolkit/browser-ui-plugin-lasso"
-import {DEFAULT, DotEndpoint, AnchorLocations} from "@jsplumb/core"
+
+import {DotEndpoint} from "@jsplumb/core"
+import { DEFAULT, AnchorLocations } from "@jsplumb/common"
 
 const CLASS_SELECTED_MODE = "selected-mode"
 const SELECTOR_SELECTED_MODE = "." + CLASS_SELECTED_MODE
