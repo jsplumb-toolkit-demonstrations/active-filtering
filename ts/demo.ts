@@ -12,7 +12,6 @@ import {
 } from "@jsplumbtoolkit/browser-ui-vanilla"
 
 import { isPort, Vertex, uuid } from "@jsplumbtoolkit/core"
-import { newInstance as newSyntaxHighlighter } from "@jsplumb/json-syntax-highlighter"
 
 import {StateMachineConnector} from "@jsplumb/connector-bezier"
 
@@ -186,6 +185,4 @@ ready(() =>{
         renderer.zoomToFit()
         flash(renderer.getRenderedElement(node))
     });
-
-    newSyntaxHighlighter(toolkit, ".jtk-demo-dataset", 2)
 })
