@@ -17,12 +17,12 @@
   },
   "homepage": "https://github.com/jsplumb-toolkit-demonstrations/active-filtering#readme",
   "dependencies": {
-    "@jsplumbtoolkit/browser-ui-vanilla": "^5.0.0-RC1",
-    "@jsplumbtoolkit/layout-spring": "^5.0.0-RC1",
-    "@jsplumbtoolkit/browser-ui-plugin-miniview": "^5.0.0-RC1",
-    "@jsplumbtoolkit/browser-ui-plugin-lasso": "^5.0.0-RC1",
-    "@jsplumbtoolkit/browser-ui-plugin-active-filtering": "^5.0.0-RC1",
-    "@jsplumb/connector-bezier": "^5.0.0-RC1"
+    "@jsplumbtoolkit/browser-ui-vanilla": "^5.0.0-RC12",
+    "@jsplumbtoolkit/layout-spring": "^5.0.0-RC12",
+    "@jsplumbtoolkit/browser-ui-plugin-miniview": "^5.0.0-RC12",
+    "@jsplumbtoolkit/browser-ui-plugin-lasso": "^5.0.0-RC12",
+    "@jsplumbtoolkit/browser-ui-plugin-active-filtering": "^5.0.0-RC12",
+    "@jsplumb/connector-bezier": "^5.0.0-RC12"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
