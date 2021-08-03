@@ -1,3 +1,4 @@
+
 import {
     SurfaceViewOptions,
     EVENT_CLICK,
@@ -5,10 +6,7 @@ import {
     EVENT_CANVAS_CLICK,
     EVENT_SURFACE_MODE_CHANGED,
     DEFAULT, AnchorLocations,
-    DotEndpoint
-} from "@jsplumbtoolkit/browser-ui"
-
-import {
+    DotEndpoint,
     ready,
     newInstance
 } from "@jsplumbtoolkit/browser-ui-vanilla"
