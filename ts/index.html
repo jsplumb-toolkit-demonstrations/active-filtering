@@ -5,11 +5,10 @@
         <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
 
         <!-- CSS -->
-        <link rel="stylesheet" href="node_modules/jsplumbtoolkit/dist/css/jsplumbtoolkit.css">
-        <link rel="stylesheet" href="node_modules/@jsplumb/json-syntax-highlighter/jsplumbtoolkit-syntax-highlighter.css">
-        <link rel="stylesheet" href="node_modules/@jsplumb/toolkit-demo-support/jsplumbtoolkit-demo-support.css">
+        <link rel="stylesheet" href="node_modules/@jsplumbtoolkit/browser-ui/css/jsplumbtoolkit.css">
+        <link rel="stylesheet" href="node_modules/@jsplumbtoolkit/browser-ui/css/jsplumbtoolkit-demo-support.css">
         <!-- /CSS -->
-        <link rel="stylesheet" href="app.css">
+        <link rel="stylesheet" href="../app.css">
     </head>
     <body>
 
@@ -19,10 +18,8 @@
                 <h3>${id.substring(0, 5)}</h3>
                 <div style="display:flex;flex-direction:column">
                     <r-each in="items">
-                        <div>
+                        <div data-jtk-port="${id}" data-jtk-source="true" data-jtk-target="true">
                             <span>${entries.join(' ')}</span>
-                            <jtk-source port-id="${index}"/>
-                            <jtk-target port-id="${index}"/>
                         </div>
                     </r-each>
                 </div>
@@ -46,9 +43,9 @@
             <div class="jtk-demo-rhs">
                 <div class="description">
                     <h3>Active Filtering</h3>
-                    <p>Active filtering provides a way to filter connection targets when a drag begins.</p>
+                    <p>The Active filtering plugin provides a way to filter connection targets when a drag begins.</p>
                     <p>
-                        When <code>activeFiltering</code> is set on a Surface and a <code>beforeConnect</code> function is supplied to the Toolkit's
+                        When an <code>activeFiltering</code> plugin is set on a Surface and a <code>beforeConnect</code> function is supplied to the Toolkit's
                         constructor, that function is called before a new connection is dragged, for every possible target for
                         the current source.
                     </p>
@@ -67,14 +64,7 @@
 
         <!-- /content -->
 
-        <!-- imports -->
-        <script src='node_modules/jsplumbtoolkit/dist/js/jsplumbtoolkit.js'></script>
-        <script src="node_modules/@jsplumb/json-syntax-highlighter/jsplumbtoolkit-syntax-highlighter.umd.js"></script>
-        <!-- /imports -->
-
-        <!-- demo -->        
-        <script src="app.js"></script>
-        <!-- /demo -->
+        <script src="_build/demo.umd.js"></script>
 
     </body>
 </html>
