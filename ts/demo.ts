@@ -8,7 +8,9 @@ import {
     DEFAULT, AnchorLocations,
     DotEndpoint,
     ready,
-    newInstance
+    newInstance,
+    BrowserUI,
+    Surface
 } from "@jsplumbtoolkit/browser-ui-vanilla"
 
 import { isPort, Vertex, uuid } from "@jsplumbtoolkit/core"
@@ -27,7 +29,7 @@ const CLASS_HIGHLIGHT = "hl"
 
 ready(() =>{
 
-    const toolkit = newInstance({
+    const toolkit:BrowserUI = newInstance({
         portDataProperty:"items",
         beforeConnect:(source:Vertex, target:Vertex) => {
             // ignore node->node connections; our UI is not configured to produce them. we could catch it and
@@ -119,7 +121,7 @@ ready(() =>{
         }
     };
 
-    const renderer = toolkit.render(canvasElement, {
+    const renderer:Surface = toolkit.render(canvasElement, {
         zoomToFit: true,
         view: view,
         layout: {
