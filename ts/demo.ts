@@ -17,7 +17,7 @@ import { isPort, Vertex, uuid } from "@jsplumbtoolkit/core"
 
 import {StateMachineConnector} from "@jsplumb/connector-bezier"
 
-import {SpringLayout} from "@jsplumbtoolkit/layout-spring"
+import {ForceDirectedLayout} from "@jsplumbtoolkit/layout-force-directed"
 
 import {MiniviewPlugin} from "@jsplumbtoolkit/browser-ui-plugin-miniview"
 import {ActiveFilteringPlugin} from "@jsplumbtoolkit/browser-ui-plugin-active-filtering"
@@ -125,7 +125,7 @@ ready(() =>{
         zoomToFit: true,
         view: view,
         layout: {
-            type: SpringLayout.type
+            type: ForceDirectedLayout.type
         },
         plugins:[
             {
