@@ -11,32 +11,16 @@ This is a demonstration of the **activeFiltering** option in the Surface widget.
 ```javascript
 {
     "dependencies": {
-        "font-awesome": "^4.7.0",
-        "jsplumbtoolkit": "file:./jsplumbtoolkit.tgz"
-    }
+        "@jsplumbtoolkit/browser-ui-vanilla": "^5.7.1",
+        "@jsplumbtoolkit/layout-force-directed": "^5.7.1",
+        "@jsplumbtoolkit/browser-ui-plugin-miniview": "^5.7.1",
+        "@jsplumbtoolkit/browser-ui-plugin-lasso": "^5.7.1",
+        "@jsplumbtoolkit/browser-ui-plugin-active-filtering": "^5.7.1",
+        "@jsplumb/connector-bezier": "^5.7.1"
+      }
 }
 
 ```
-
-[TOP](#top)
-
----
-
-<a name="setup"></a>
-### Page Setup
-
-#### CSS
-
-- **jsplumbtoolkit.css**     Contains sane defaults for various core Toolkit widgets. Recommended for inclusion, as least until you can override everything you need to. 
-- **jsplumbtoolkit-demo-support.css**      Common styles for the Toolkit demo pages. Not needed for your apps.
-- **app.css**  Styles for this demonstration.
-
-#### JS
-
-- **jsplumbtoolkit.js**          Core jsPlumb Toolkit code.
-- **app.js** Application specific JS.
-
-With the exception of `app.css` and `app.js` each of these is loaded from a package with the same name.
 
 [TOP](#top)
 
@@ -51,15 +35,13 @@ This demonstration uses a single template to render its nodes:
 <script type="jtk" id="tmplNode">
     <div class="connectivity-node">
         <h3>${id.substring(0, 5)}</h3>
-        <ul>
+        <div style="display:flex;flex-direction:column">
             <r-each in="items">
-                <li>
+                <div data-jtk-port="${id}" data-jtk-source="true" data-jtk-target="true">
                     <span>${entries.join(' ')}</span>
-                    <jtk-source port-id="${index}"/>
-                    <jtk-target port-id="${index}"/>
-                </li>
+                </div>
             </r-each>
-        </ul>
+        </div>
     </div>
 </script>
 ```
@@ -75,10 +57,12 @@ The Toolkit instance is created like this:
 
 
 ```javascript
-var toolkit = jsPlumbToolkit.newInstance({
-    beforeConnect:function(source, target) {
-        
-         -- see 'Active Filtering' section below --
+const toolkit:BrowserUI = newInstance({
+    portDataProperty:"items",
+    beforeConnect:(source:Vertex, target:Vertex) => {
+    
+     -- see 'Active Filtering' section below --
+     
     }
 });
 
@@ -98,14 +82,16 @@ Nodes for this demonstration consist of a list of Ports, each of which has the n
 
 ```javascript
 
-var words = [
+import { uuid } from "@jsplumbtoolkit/core"
+
+const words = [
     "CAT", "DOG", "COW", "HORSE", "DUCK", "HEN"
 ];
 
-var randomPort = function(index) {
-    var out = [], map = {};
+const randomPort = (index:number) => {
+    let out = [], map = {};
     function _one() {
-        var a, done = false;
+        let a, done = false;
         while (!done) {
             a = words[Math.floor(Math.random() * words.length)];
             done = map[a] !== true;
@@ -118,14 +104,14 @@ var randomPort = function(index) {
     return { entries:out, index:index };
 };
 
-var newNode = function() {
+const newNode = () => {
     var groupCount = Math.floor(Math.random() * 3) + 1,
         data = {
-            id:jsPlumbUtil.uuid(),
+            id:uuid(),
             items:[]
         };
 
-    for (var i = 0; i < groupCount; i++) {
+    for (let i = 0; i < groupCount; i++) {
         data.items.push(randomPort(i));
     }
 
@@ -136,8 +122,8 @@ var newNode = function() {
 The initial dataset is constructed as follows:
 
 ```javascript
-var nodeCount = 5;
-for (var i = 0; i < nodeCount;i++) {
+let nodeCount = 5;
+for (let i = 0; i < nodeCount;i++) {
     newNode();
 }
 
@@ -153,23 +139,27 @@ Subsequently, when the user presses the `+` button, a new Node is added using th
 ### View
 
 ```javascript
-var view = {
+
+import {StateMachineConnector} from "@jsplumb/connector-bezier"
+import { DotEndpoint, AnchorLocations } from "@jsplumbtoolkit/browser-ui-vanilla"
+
+const view:SurfaceViewOptions = {
     nodes: {
-        "default": {
-            template: "tmplNode"
+        [DEFAULT]: {
+            templateId: "tmplNode"
         }
     },
     edges: {
-        "default": {
-            connector: [ "StateMachine", { curviness: 10 } ],
-            endpoint: [ "Dot", { radius: 10 } ],
-            anchor: [ "Continuous", { faces:[ "left", "right" ]} ]
+        [DEFAULT]: {
+            connector: { type:StateMachineConnector.type, options:{ curviness: 10 } },
+            endpoint: { type:DotEndpoint.type, options:{ radius: 10 } },
+            anchor: { type:AnchorLocations.Continuous, options:{ faces:["left", "right"]} }
         }
     }
 };
 ```
 
-There is a single Node type ("default") defined, mapped to the template shown above, and a single Edge, which contains rendering instructions for the Connector, its Endpoints, and the type of Anchor to use.
+There is a single Node type ("default") defined, mapped to the template shown above, and a single edge, which contains rendering instructions for the connector, its endpoints, and the type of anchor to use.
 
 [TOP](#top)
 
@@ -181,36 +171,45 @@ There is a single Node type ("default") defined, mapped to the template shown ab
 This is the call that sets up the UI:
 
 ```javascript
-var renderer = toolkit.render({
-    container: canvasElement,
+const renderer:Surface = toolkit.render(canvasElement, {
     zoomToFit: true,
     view: view,
     layout: {
-        type: "Spring"
+        type: ForceDirectedLayout.type
     },
-    miniview: {
-        container:miniviewElement
-    },
-    lassoFilter: ".controls, .controls *, .miniview, .miniview *",
-    events: {
-        canvasClick: function (e) {
-            toolkit.clearSelection();
+    plugins:[
+        {
+            type:MiniviewPlugin.type,
+            options:{
+                container:miniviewElement
+            }
         },
-        modeChanged: function (mode) {
-            jsPlumb.removeClass(jsPlumb.getSelector("[mode]"), "selected-mode");
-            jsPlumb.addClass(jsPlumb.getSelector("[mode='" + mode + "']"), "selected-mode");
+        ActiveFilteringPlugin.type,
+        {
+            type:LassoPlugin.type,
+            options:{lassoFilter: ".controls, .controls *, .miniview, .miniview *"}
+        }
+    ],
+    events: {
+        [EVENT_CANVAS_CLICK]: (e:Event) => {
+            toolkit.clearSelection()
+        },
+        [EVENT_SURFACE_MODE_CHANGED]: (mode:string) => {
+            renderer.removeClass(document.querySelector(SELECTOR_SELECTED_MODE), CLASS_SELECTED_MODE)
+            renderer.addClass(document.querySelector("[mode='" + mode + "']"), CLASS_SELECTED_MODE)
         }
     },
     consumeRightClick:false,
-    activeFiltering:true
-});
+    // disable dragging from anywhere in the individual animal elements (drag can only be done via the header)
+    dragOptions:{
+        filter:"[data-jtk-port], [data-jtk-port] *"
+    }
+})
 ```
 
-Here's an explanation of what the various parameters mean:
+The first argument to `render` identifies the element into which you wish the Toolkit to render.
 
-- **container**
-
-This identifies the element into which you wish the Toolkit to render.
+Here's an explanation of what the various parameters mean in the second argument:
 
 - **view**
 
@@ -222,42 +221,48 @@ Parameters for the layout.
 
 ```javascript
 {
-  type:"Spring"
+  type: ForceDirectedLayout.type
 }
 ```
 
 
-We specify a `Spring` layout (force directed).
+We specify a `ForceDirected` layout (only available from version 5.7.0 onwards. For previous versions, use Spring).
 
-- **miniview**
+- **plugins**
+
+Various plugins to attach to the Surface - here we add 3:
+
 
 ```javascript
-{
-  container:miniviewElement
-}
+plugins:[
+    {
+        type:MiniviewPlugin.type,
+        options:{
+            container:miniviewElement
+        }
+    },
+    ActiveFilteringPlugin.type,
+    {
+        type:LassoPlugin.type,
+        options:{lassoFilter: ".controls, .controls *, .miniview, .miniview *"}
+    }
+]
 ```
 
-The miniview options provide the the element to convert into a Miniview. You can also provide an element ID here.
-
-- **lassoFilter**
-
-This selector specifies elements on which a mousedown should not cause the selection lasso to begin. In this demonstration we exclude the buttons in the top left and the Miniview.
+Note that `ActiveFilteringPlugin` is specified without constructor options but the other two do have constructor options specified. For the `LassoPlugin`, `lassoFilter` is a selector that specifies elements on which a mousedown should not cause the selection lasso to begin. In this demonstration we exclude the buttons in the top left and the miniview.
 
 - **events**
 
 We listen for two events:
 
-  `canvasClick` - a click somewhere on the widget's whitespace. Then we clear the Toolkit's current selection.
+  `EVENT_CANVAS_CLICK` - a click somewhere on the widget's whitespace. Then we clear the Toolkit's current selection.
   
-  `modeChanged` - Surface's mode has changed (either "select" or "pan"). We update the state of the buttons.
+  `EVENT_SURFACE_MODE_CHANGED` - Surface's mode has changed (either "select" or "pan"). We update the state of the buttons.
 
 - **zoomToFit**
 
 Instructs the Surface to zoom the contents of the display when it is first rendered so that every Node is visible.
 
-- **activeFiltering**
-
-This flag is the key to this demonstration - see below.
 
 [TOP](#top)
 
@@ -266,43 +271,37 @@ This flag is the key to this demonstration - see below.
 <a name="filtering"></a>
 ### Active Filtering
 
-The `activeFiltering:true` parameter set on the `render` call instructs the Surface to invoke the `beforeConnect` function declared on the Toolkit for every combination of Node/Port whenever the user starts to drag a new Edge. Whenever `beforeConnect` does not return true, the related target is disabled.
+The `activeFiltering:true` parameter set on the `render` call instructs the Surface to invoke the `beforeConnect` function declared on the Toolkit for every combination of node/port whenever the user starts to drag a new edge. Whenever `beforeConnect` does not return true, the related target is disabled.
 
 #### beforeConnect
 
 
 ```javascript
-beforeConnect:function(source, target) {
-
+beforeConnect:(source:Vertex, target:Vertex) => {
     // ignore node->node connections; our UI is not configured to produce them. we could catch it and
     // return false, though, which would ensure that nodes could not be connected programmatically.
-
-    if (source.objectType !== "Node" && target.objectType !== "Node") {
+    if (isPort(source) && isPort(target)) {
 
         // cannot create loopback connections
         if (source === target) {
-            return false;
+            return false
         }
 
         // cannot connect to Ports on the same Node as the Edge source
-        if (source.getNode() === target.getNode()) {
-            return false;
+        if (source.getParent() === target.getParent()) {
+            return false
         }
 
-        var sourceData = source.getNode().data,
-            targetData = target.getNode().data;
+        const sourceData = source.data.entries,
+            targetData = target.data.entries
 
-        // attempt to match animals.
-        var sourceItem  = sourceData.items[source.id];
-        var targetItem  = targetData.items[target.id];
-        if (sourceItem.entries && targetItem.entries) {
-            for (var i = 0; i < sourceItem.entries.length; i++) {
-                if (targetItem.entries.indexOf(sourceItem.entries[i]) !== -1) {
-                    return true;
-                }
+        // attempt to match animals
+        for (let i = 0; i < sourceData.length; i++) {
+            if (targetData.indexOf(sourceData[i]) !== -1) {
+                return true
             }
         }
-        return false;
+        return false
     }
 }
 
@@ -330,28 +329,29 @@ In this demonstration, disabled targets are made more transparent and their text
 <a name="adding"></a>
 ### Adding New Nodes
 
-The `+` button in the top left corner can be used to add a new Node. Here's the code that sets up the listener and adds the new Node:
+The `+` button in the top left corner can be used to add a new node. Here's the code that sets up the listener and adds the new node:
 
 ```javascript
 //
 // assign a class to a new node which brings the user's attention to it. then a little while later,
 // take it off.
 //
-function flash(el) {
-    jsPlumb.addClass(el, "hl");
+function flash(el:Element) {
+    renderer.addClass(el, CLASS_HIGHLIGHT)
     setTimeout(function() {
-        jsPlumb.removeClass(el, "hl");
-    }, 1950);
+        renderer.removeClass(el, CLASS_HIGHLIGHT)
+    }, 1950)
 }
 
-jsPlumb.on(mainElement, "tap", "[add]", function() {
-    var node = newNode();
-    renderer.zoomToFit();
-    flash(renderer.getRenderedElement(node));
+// on add node button, add a new node, zoom the display, flash the new element.
+renderer.on(mainElement, EVENT_CLICK, "[add]", () => {
+    const node = newNode()
+    renderer.zoomToFit()
+    flash(renderer.getRenderedElement(node))
 });
 ```
 
-We add the Node to the data model first via the `newNode` function we saw above. Then we instruct the Surface to resize so it fits all the content, and then we use `getRenderedElement(node)` on our Surface widget to retrieve the  DOM element that was rendered for the given Node.  We then use a little helper function to draw the user's attention to the new Node.
+We add the node to the data model first via the `newNode` function we saw above. Then we instruct the surface to resize so it fits all the content, and then we use `getRenderedElement(node)` on our surface widget to retrieve the DOM element that was rendered for the given node.  We then use a little helper function to draw the user's attention to the new node.
 
 The CSS class is specified like this:
 
@@ -377,9 +377,9 @@ The code that listens to clicks on this icon is as follows:
 
 ```javascript
 // pan mode/select mode
-jsPlumb.on(".controls", "tap", "[mode]", function () {
-  renderer.setMode(this.getAttribute("mode"));
-});
+renderer.on(mainElement, EVENT_CLICK, "[mode]",  (e:Event, el:HTMLElement) => {
+    renderer.setMode(el.getAttribute("mode") as SurfaceMode)
+})
 ```
 
 The tap listener extracts the desired mode from the button that was clicked and sets it on the renderer. This causes a `modeChanged` event to be fired, which is picked up by the `modeChanged` event listener in the View.
@@ -396,7 +396,7 @@ The Surface widget automatically exits select mode once the user has selected so
 
 ```javascript
 events: {
-  canvasClick: function (e) {
+  [EVENT_CANVAS_CLICK]: function (e) {
     toolkit.clearSelection();
   }
 }
