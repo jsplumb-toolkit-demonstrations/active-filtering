@@ -15,11 +15,11 @@
         <!-- content -->
         <script type="jtk" id="tmplNode">
             <div class="connectivity-node">
-                <h3>${id.substring(0, 5)}</h3>
+                <h3>{{#id}}</h3>
                 <div style="display:flex;flex-direction:column">
                     <r-each in="items">
                         <div data-jtk-port="${id}" data-jtk-source="true" data-jtk-target="true">
-                            <span>${entries.join(' ')}</span>
+                            <span>{{#entryNames}}</span>
                         </div>
                     </r-each>
                 </div>

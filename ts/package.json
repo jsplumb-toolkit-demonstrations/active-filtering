@@ -1,6 +1,6 @@
 {
   "name": "active-filtering",
-  "version": "1.0.0",
+  "version": "5.8.0",
   "description": "",
   "main": "demo.js",
   "scripts": {
@@ -17,12 +17,12 @@
   },
   "homepage": "https://github.com/jsplumb-toolkit-demonstrations/active-filtering#readme",
   "dependencies": {
-    "@jsplumbtoolkit/browser-ui-vanilla": "^5.7.1",
-    "@jsplumbtoolkit/layout-force-directed": "^5.7.1",
-    "@jsplumbtoolkit/browser-ui-plugin-miniview": "^5.7.1",
-    "@jsplumbtoolkit/browser-ui-plugin-lasso": "^5.7.1",
-    "@jsplumbtoolkit/browser-ui-plugin-active-filtering": "^5.7.1",
-    "@jsplumb/connector-bezier": "^5.7.1"
+    "@jsplumbtoolkit/browser-ui-vanilla-2": "^5.8.0",
+    "@jsplumbtoolkit/layout-force-directed": "^5.8.0",
+    "@jsplumbtoolkit/browser-ui-plugin-miniview": "^5.8.0",
+    "@jsplumbtoolkit/browser-ui-plugin-lasso": "^5.8.0",
+    "@jsplumbtoolkit/browser-ui-plugin-active-filtering": "^5.8.0",
+    "@jsplumb/connector-bezier": "^5.8.0"
   },
   "devDependencies": {
     "@types/node": "14.17.3",

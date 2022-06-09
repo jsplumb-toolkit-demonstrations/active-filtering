@@ -11,9 +11,9 @@ import {
     newInstance,
     BrowserUI,
     Surface
-} from "@jsplumbtoolkit/browser-ui-vanilla"
+} from "@jsplumbtoolkit/browser-ui-vanilla-2"
 
-import { isPort, Vertex, uuid } from "@jsplumbtoolkit/core"
+import { isPort, Vertex, uuid, ObjectData } from "@jsplumbtoolkit/core"
 
 import {StateMachineConnector} from "@jsplumb/connector-bezier"
 
@@ -153,6 +153,10 @@ ready(() =>{
         // disable dragging from anywhere in the individual animal elements (drag can only be done via the header)
         dragOptions:{
             filter:"[data-jtk-port], [data-jtk-port] *"
+        },
+        macros:{
+            id:(data:ObjectData) => data.id.substring(0, 5),
+            entryNames:(data:ObjectData) => data.entries.join(' ')
         }
     })
 
