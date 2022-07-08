@@ -154,7 +154,7 @@ ready(() =>{
         dragOptions:{
             filter:"[data-jtk-port], [data-jtk-port] *"
         },
-        macros:{
+        templateMacros:{
             id:(data:ObjectData) => data.id.substring(0, 5),
             entryNames:(data:ObjectData) => data.entries.join(' ')
         }
