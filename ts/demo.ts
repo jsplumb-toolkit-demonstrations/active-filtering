@@ -10,18 +10,16 @@ import {
     ready,
     newInstance,
     BrowserUI,
-    Surface
-} from "@jsplumbtoolkit/browser-ui-vanilla-2"
-
-import { isPort, Vertex, uuid, ObjectData } from "@jsplumbtoolkit/core"
-
-import {StateMachineConnector} from "@jsplumb/connector-bezier"
-
-import {ForceDirectedLayout} from "@jsplumbtoolkit/layout-force-directed"
-
-import {MiniviewPlugin} from "@jsplumbtoolkit/browser-ui-plugin-miniview"
-import {ActiveFilteringPlugin} from "@jsplumbtoolkit/browser-ui-plugin-active-filtering"
-import {LassoPlugin} from "@jsplumbtoolkit/browser-ui-plugin-lasso"
+    Surface,
+    isPort,
+    Vertex,
+    uuid,
+    ObjectData,
+    ForceDirectedLayout,
+    MiniviewPlugin,
+    ActiveFilteringPlugin,
+    LassoPlugin, StateMachineConnector
+} from "@jsplumbtoolkit/browser-ui"
 
 const CLASS_SELECTED_MODE = "selected-mode"
 const SELECTOR_SELECTED_MODE = "." + CLASS_SELECTED_MODE
